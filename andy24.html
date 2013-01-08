@@ -1,0 +1,196 @@
+<html>
+<head><title>Counting 24 with Andy Warhol</title>
+<!-- by davidkoree@gmail.com -->
+<!--
+Guide & Rules:
+You can choose 2 digits every time and you must get an addictive 24 by mental arithmetic.
+A 10 can be zero by double-click, an so does zero in opposite.
+Not all 4 digits makes a 24, if not, you can double-click on the right blank to restart.
+When you really got a 24, you could click on it to start next one. Otherwise, double-click :)
+-->
+<script language="JavaScript" type="text/javascript">
+var q = {}, n = 0, t = 0;
+
+function awColor() { // Andy Warhol Style
+	var a = ["00","33","66","99","CC","FF"], r, g, b;
+	r = a[Math.abs(Math.floor(Math.random()*10) - 4)];
+	g = a[Math.abs(Math.floor(Math.random()*10) - 4)];
+	b = a[Math.abs(Math.floor(Math.random()*10) - 4)];
+	return "#" + r + g + b;
+}
+
+function showCaculator() {
+	var p = [];
+	for (i in q) p.push(parseInt(i.substr(1)));
+	p.sort(function(a,b) { return a - b });
+	var p1 = p[0], p2 = p[1];
+	var ca = document.getElementById("ca");
+	ca.style.position = "absolute";
+	ca.style.top = "160px";
+	ca.style.left = ((p2-p1-1)*150/2+p1*150-75+10) + "px";
+	ca.style.zIndex = "3";
+	ca.style.display = "block";
+}
+
+function hideCaculator() {
+	document.getElementById("ca").style.display = "none";
+}
+
+function ZT(c) { // Zero or Ten
+	if (c.title == "") return;
+	var i = 1, t = 0, r;
+	while (i < 5) {
+		r = document.getElementById("c" + i);
+		if (r.title == "") t++;
+		i++;
+	}
+	if (t == 3 && c.title != "24") window.location.reload();
+	switch (c.title) {
+		case "10":
+		c.innerHTML = "0";
+		c.title = "0";
+		if (c.style.borderWidth != "0px") { q[c.id] = 0; }
+		break;
+		case "0":
+		c.innerHTML = "10";
+		c.title = "10";
+		if (c.style.borderWidth != "0px") { q[c.id] = 10; }
+		break;
+	}
+}
+
+function refresh(ca, cb, cac) {
+	ca.style.color = awColor();
+	ca.style.backgroundColor = awColor();
+	ca.style.borderWidth = "0px";
+	ca.style.height = "120px";
+	cb.innerHTML = "";
+	cb.title = "";
+	cb.style.color = "white";
+	cb.style.backgroundColor = "white";
+	cb.style.borderWidth = "0px";
+	cb.style.height = "120px";
+	cac.style.display = "none";
+	t++;
+	n -= 2;
+	delete(q[ca.id]);
+	delete(q[cb.id]);
+}
+
+function Caculate(o) {
+	var atr = [], val = [];
+	var cac = document.getElementById("ca");
+	for (i in q) {
+		atr.push(i);
+		val.push(q[i]);
+	}
+	val.sort(function(a,b) { return a - b });
+	var a = val[0], b = val[1];
+	var ca = document.getElementById(atr[0]), cb = document.getElementById(atr[1]);
+	switch (o) {
+		case "a":
+		ca.title = ca.innerHTML = b + a;
+		refresh(ca,cb,cac); break;
+		case "s":
+		ca.title = ca.innerHTML = b - a;
+		refresh(ca,cb,cac); break;
+		case "m":
+		ca.title = ca.innerHTML = a * b;
+		refresh(ca,cb,cac); break;
+		case "d":
+		if (b % a != 0) return;
+		ca.title = ca.innerHTML = b / a;
+		refresh(ca,cb,cac); break;
+	}
+}
+
+function selectCard(c) {
+	if (c.title == "") return;
+	if (t == 3 && c.title == "24") { t = 0; startGame(); return; }
+	if (c.style.color == c.style.backgroundColor) {
+		c.style.color = "white";
+		c.style.backgroundColor = "gray";
+	}
+	var w = c.style.borderWidth.split(" ");
+	w = w[0];
+	switch (w) {
+		case "0px":
+		if (n < 2) {
+			q[c.id] = parseInt(c.title);
+			n++;
+			c.style.borderWidth = "3px";
+			c.style.borderStyle = "solid";
+			c.style.borderColor = c.style.color;
+			c.style.height = "400px";
+		}
+		break;
+		default:
+		delete(q[c.id]);
+		n--;
+		c.style.borderWidth = "0px";
+		c.style.height = "120px";
+		break;
+	}
+	if (n == 2) showCaculator(); else hideCaculator();
+}
+
+function startGame() {
+	document.getElementById("ca").style.display = "none";
+	var i = 1, c;
+	while (i < 5) {
+		c = document.getElementById("c" + i);
+		c.title = c.innerHTML = Math.floor(Math.random()*10)+1;
+		c.style.color = awColor();
+		c.style.backgroundColor = awColor();
+		c.style.borderWidth = "0px";
+		i++;
+	}
+}
+
+document.ondblclick = function (ev) { ev=ev?ev:event; if (ev.clientX > 610) location.reload(); }
+</script>
+</head>
+<style type="text/css">
+.card {
+	font-family: Verdana;
+	font-size: 6em;
+	width:150px;
+	height:120px;
+	float:left;
+	text-align:center;
+	cursor:pointer;
+}
+
+.ca {
+	background-color: black;
+	color: white;
+	font-family: Verdana;
+	font-size: 2em;
+	width:150px;
+	height:150px;
+	float:left;
+	cursor:pointer;
+}
+
+.catd {
+	width:75px;
+	height:75px;
+}
+</style>
+<body onload="startGame();">
+<div id="c1" class="card" onclick="selectCard(this);" ondblclick="ZT(this);"></div>
+<div id="c2" class="card" onclick="selectCard(this);" ondblclick="ZT(this);"></div>
+<div id="c3" class="card" onclick="selectCard(this);" ondblclick="ZT(this);"></div>
+<div id="c4" class="card" onclick="selectCard(this);" ondblclick="ZT(this);"></div>
+<table id="ca" class="ca">
+  <tr>
+    <td class="catd" align="center" onmouseover="this.style.color='orange';" onmouseout="this.style.color='white';" onclick="Caculate('a');" title="add">+</td>
+    <td class="catd" align="center" onmouseover="this.style.color='orange';" onmouseout="this.style.color='white';" onclick="Caculate('m');" title="multiply">&#215;</td>
+  </tr>
+  <tr>
+    <td class="catd" align="center" onmouseover="this.style.color='orange';" onmouseout="this.style.color='white';" onclick="Caculate('d');" title="divide">&#247;</td>
+    <td class="catd" align="center" onmouseover="this.style.color='orange';" onmouseout="this.style.color='white';" onclick="Caculate('s');" title="minus">-</td>
+  </tr>
+</table>
+</body>
+</html>
